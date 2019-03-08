@@ -81,10 +81,10 @@ function finalizeXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImp
         <serveur>${fmMetaData.getEntete().serveur}</serveur>
         <chemin>${fmMetaData.getEntete().chemin}</chemin>
         <urlhttp>${fmMetaData.getEntete().urlhttp}</urlhttp>
-        <pdf>
-            <sautDePageAvantSection>${fmMetaData.getEntete().getPdf().sautDePageAvantSection}</sautDePageAvantSection>
-            <notesBasPage>${fmMetaData.getEntete().getPdf().notesBasPage}</notesBasPage>
-        </pdf>
+        <nopdf/>
+        <nozip/>
+        <nodownload/>
+        <noebook/>
         <nomfaq>${fmMetaData.getEntete().nomfaq}</nomfaq>
     </entete>
     <!-- description des auteurs -->
