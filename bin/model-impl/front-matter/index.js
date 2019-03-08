@@ -9,5 +9,4 @@ __export(require("./fm-summary-auteur"));
 __export(require("./fm-summary-editeur"));
 __export(require("./fm-summary-entete"));
 __export(require("./fm-summary-entete-meta"));
-__export(require("./fm-summary-entete-pdf"));
 __export(require("./fm-summary-entete-titre"));

@@ -2,9 +2,8 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const fm_summary_entete_meta_1 = require("./fm-summary-entete-meta");
 const fm_summary_entete_titre_1 = require("./fm-summary-entete-titre");
-const fm_summary_entete_pdf_1 = require("./fm-summary-entete-pdf");
 class FmSummaryEntete {
-    constructor({ rubrique, meta, titre, date, miseajour, googleAnalytics, licauteur, lictype, licannee, serveur, chemin, urlhttp, pdf, nomfaq }) {
+    constructor({ rubrique, meta, titre, date, miseajour, googleAnalytics, licauteur, lictype, licannee, serveur, chemin, urlhttp, nomfaq }) {
         this.rubrique = rubrique;
         this.setMeta(meta);
         this.setTitre(titre);
@@ -17,7 +16,6 @@ class FmSummaryEntete {
         this.serveur = serveur;
         this.chemin = chemin;
         this.urlhttp = urlhttp;
-        this.setPdf(pdf);
         this.nomfaq = nomfaq;
     }
     setMeta(meta) {
@@ -43,12 +41,6 @@ class FmSummaryEntete {
     }
     getMiseajour() {
         return this.miseajour;
-    }
-    setPdf(pdf) {
-        this.pdf = new fm_summary_entete_pdf_1.FmSummaryEntetePdf(pdf);
-    }
-    getPdf() {
-        return this.pdf;
     }
 }
 exports.FmSummaryEntete = FmSummaryEntete;

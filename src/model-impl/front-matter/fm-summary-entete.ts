@@ -2,7 +2,6 @@
 
 import { FmSummaryEnteteMeta } from './fm-summary-entete-meta';
 import { FmSummaryEnteteTitre } from './fm-summary-entete-titre';
-import { FmSummaryEntetePdf } from './fm-summary-entete-pdf';
 
 export class FmSummaryEntete {
     public rubrique: number;
@@ -17,10 +16,9 @@ export class FmSummaryEntete {
     public serveur: string;
     public chemin: string;
     public urlhttp: string;
-    protected pdf: FmSummaryEntetePdf;
     public nomfaq: string;
 
-    public constructor({ rubrique, meta, titre, date, miseajour, googleAnalytics, licauteur, lictype, licannee, serveur, chemin, urlhttp, pdf, nomfaq }: any) {
+    public constructor({ rubrique, meta, titre, date, miseajour, googleAnalytics, licauteur, lictype, licannee, serveur, chemin, urlhttp, nomfaq }: any) {
         this.rubrique = rubrique;
         this.setMeta(meta);
         this.setTitre(titre);
@@ -33,7 +31,6 @@ export class FmSummaryEntete {
         this.serveur = serveur;
         this.chemin = chemin;
         this.urlhttp = urlhttp;
-        this.setPdf(pdf);
         this.nomfaq = nomfaq;
     }
 
@@ -67,13 +64,5 @@ export class FmSummaryEntete {
 
     public getMiseajour() {
         return this.miseajour;
-    }
-
-    public setPdf(pdf: any) {
-        this.pdf = new FmSummaryEntetePdf(pdf);
-    }
-
-    public getPdf() {
-        return this.pdf;
     }
 }
