@@ -37,6 +37,7 @@ function initXmlDocument(reducedTargetDocumentList, targetDocumentToReduceCurren
 function finalizeXmlDocument(reducedTargetDocumentList, targetDocumentToReduce) {
     reducedTargetDocumentList = addXmlQa(reducedTargetDocumentList, targetDocumentToReduce);
     const fmMetaData = reducedTargetDocumentList[0].fmMetaData;
+    const gaXmlProp = (fmMetaData.getEntete().googleAnalytics) ? `\n        <google-analytics>${fmMetaData.getEntete().googleAnalytics}</google-analytics>` : '';
     reducedTargetDocumentList[0].transformedData = `<?xml version="1.0" encoding="UTF-8"?>
 <document>
     <!-- en-tete de la FAQ -->
@@ -55,8 +56,7 @@ function finalizeXmlDocument(reducedTargetDocumentList, targetDocumentToReduce) 
             <article>${fmMetaData.getEntete().getTitre().article}</article>
         </titre>
         <date>${fmMetaData.getEntete().getDate()}</date>
-        <miseajour>${fmMetaData.getEntete().getMiseajour()}</miseajour>
-        <google-analytics>${fmMetaData.getEntete().googleAnalytics}</google-analytics>
+        <miseajour>${fmMetaData.getEntete().getMiseajour()}</miseajour>${gaXmlProp}
         <licauteur>${fmMetaData.getEntete().licauteur}</licauteur>
         <lictype>${fmMetaData.getEntete().lictype}</lictype>
         <licannee>${fmMetaData.getEntete().licannee}</licannee>
