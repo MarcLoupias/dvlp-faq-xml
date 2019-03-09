@@ -9,7 +9,7 @@ export class FmSummaryEntete {
     protected titre: FmSummaryEnteteTitre;
     protected date: string;
     protected miseajour: string;
-    public googleAnalytics: string;
+    public googleAnalytics?: string;
     public licauteur: string;
     public lictype: number;
     public licannee: string;
@@ -18,7 +18,7 @@ export class FmSummaryEntete {
     public urlhttp: string;
     public nomfaq: string;
 
-    public constructor({ rubrique, meta, titre, date, miseajour, googleAnalytics, licauteur, lictype, licannee, serveur, chemin, urlhttp, nomfaq }: any) {
+    public constructor({ rubrique, meta, titre, date, miseajour, googleAnalytics = '', licauteur, lictype, licannee, serveur, chemin, urlhttp, nomfaq }: any) {
         this.rubrique = rubrique;
         this.setMeta(meta);
         this.setTitre(titre);
