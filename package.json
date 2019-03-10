@@ -62,6 +62,7 @@
         ]
     },
     "dependencies": {
+        "dvlp-commons": "1.0.1",
         "marked": "0.6.1",
         "md-file-converter": "1.2.0"
     },

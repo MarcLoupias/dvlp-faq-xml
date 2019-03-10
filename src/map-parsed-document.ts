@@ -3,9 +3,9 @@
 import {
     UnConfiguredMapParsedDocumentFnType, MapParsedDocumentFnType, ITargetDocument, MdParsedDocument, TargetDocument
 } from 'md-file-converter';
+import { FmQa } from 'dvlp-commons';
 import { MdParsedDocumentImpl, TargetDocumentImpl } from './model-impl';
 import { MarkedOptions } from 'marked';
-import { FmQa } from './model-impl/front-matter';
 
 export function makeUnConfiguredMapParsedDocument({ marked }: any): UnConfiguredMapParsedDocumentFnType {
     return (conf: { markedOptions: MarkedOptions }): MapParsedDocumentFnType => {
