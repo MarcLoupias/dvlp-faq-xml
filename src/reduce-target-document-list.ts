@@ -1,8 +1,8 @@
 'use strict';
 
 import { TargetDocumentImpl, ReducedTargetDocumentImpl } from './model-impl';
-import { FmSummary, FmSummaryAuteur } from './model-impl/front-matter';
 import { ITargetDocument } from 'md-file-converter';
+import { FmSummary, FmSummaryAuteur } from 'dvlp-commons';
 
 class SectionListObject {
     public sectionName: string;
