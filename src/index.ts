@@ -1,6 +1,7 @@
 'use strict';
 
 import * as marked from 'marked';
+import * as getSlug from 'speakingurl';
 
 import markedRendererXmlImpl from './marked-renderer-xml-impl';
 import { parseLexeredDocument } from './parse-lexered-document';
@@ -20,7 +21,7 @@ import {
 } from 'md-file-converter';
 
 const targetDocumentFileExtension = '.xml';
-const unConfiguredMapParsedDocument = makeUnConfiguredMapParsedDocument({ marked });
+const unConfiguredMapParsedDocument = makeUnConfiguredMapParsedDocument({ marked, getSlug });
 const markedRenderer: marked.Renderer = Object.assign(
     new marked.Renderer(),
     { ...markedRendererXmlImpl }

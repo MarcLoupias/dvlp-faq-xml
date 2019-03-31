@@ -1,21 +1,16 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 class TargetDocumentImpl {
-    static createTargetDocumentImpl(targetDocument, sectionName, sectionTitle) {
-        return new TargetDocumentImpl(targetDocument, sectionName, sectionTitle);
+    static createTargetDocumentImpl(targetDocument, slugifiedQaName, slugifiedSectionName, sectionTitle) {
+        return new TargetDocumentImpl(targetDocument, slugifiedQaName, slugifiedSectionName, sectionTitle);
     }
-    constructor(targetDocument, sectionName, sectionTitle) {
+    constructor(targetDocument, slugifiedQaName, slugifiedSectionName, sectionTitle) {
         this.documentPaths = targetDocument.documentPaths;
         this.transformedData = targetDocument.transformedData;
         this.fmMetaData = targetDocument.fmMetaData || null;
-        this.setSectionName(sectionName);
+        this.slugifiedQaName = slugifiedQaName;
+        this.slugifiedSectionName = slugifiedSectionName;
         this.sectionTitle = sectionTitle;
-    }
-    setSectionName(sectionName) {
-        this.sectionName = 'section-' + sectionName.substring(0, 3);
-    }
-    getSectionName() {
-        return this.sectionName;
     }
 }
 exports.TargetDocumentImpl = TargetDocumentImpl;

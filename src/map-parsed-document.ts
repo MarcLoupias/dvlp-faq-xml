@@ -5,9 +5,9 @@ import {
 } from 'md-file-converter';
 import { FmQa } from 'dvlp-commons';
 import { MdParsedDocumentImpl, TargetDocumentImpl } from './model-impl';
-import { MarkedOptions } from 'marked';
+import { MarkedOptions, Tokens } from 'marked';
 
-export function makeUnConfiguredMapParsedDocument({ marked }: any): UnConfiguredMapParsedDocumentFnType {
+export function makeUnConfiguredMapParsedDocument({ marked, getSlug }: any): UnConfiguredMapParsedDocumentFnType {
     return (conf: { markedOptions: MarkedOptions }): MapParsedDocumentFnType => {
         return (mdParsedDocument: MdParsedDocument): ITargetDocument => {
             function parseWithMarked(tokens: any) {
@@ -23,12 +23,18 @@ export function makeUnConfiguredMapParsedDocument({ marked }: any): UnConfigured
                 });
 
             } else {
-                const mdParsedDocumentImpl = mdParsedDocument as MdParsedDocumentImpl;
-                const qaFmMetaData = mdParsedDocumentImpl.fmMetaData as FmQa;
+                const mdParsedDocumentImpl: MdParsedDocumentImpl = mdParsedDocument as MdParsedDocumentImpl;
+                const qaFmMetaData: FmQa = mdParsedDocumentImpl.fmMetaData as FmQa;
+                const questionTitleToken: Tokens.Heading = mdParsedDocumentImpl.questionTitleToken[0] as Tokens.Heading;
 
-                const qaContent = parseWithMarked(mdParsedDocumentImpl.parsedTokensList);
-                const questionTitle = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
-                const transformedData = `<QA create_date="${qaFmMetaData.getCreateDate()}" last_update="${qaFmMetaData.getLastUpdateDate()}" name="${mdParsedDocumentImpl.documentPaths.basename}">${questionTitle}<author name="${qaFmMetaData.author}"/><keywords>${qaFmMetaData.keywords}</keywords><answer>${qaContent}</answer></QA>`;
+                const qaContent: string = parseWithMarked(mdParsedDocumentImpl.parsedTokensList);
+                const qaTitleText: string = questionTitleToken.text;
+                const qaTitleTag: string = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
+                const sectionTitle: string = parseWithMarked(mdParsedDocumentImpl.sectionTitleToken);
+
+                const slugifiedQaName: string = getSlug(qaTitleText, { lang: 'fr' });
+                const slugifiedSectionName: string = getSlug(sectionTitle, { lang: 'fr' });
+                const transformedData: string = `<QA create_date="${qaFmMetaData.getCreateDate()}" last_update="${qaFmMetaData.getLastUpdateDate()}" name="${slugifiedQaName}">${qaTitleTag}<author name="${qaFmMetaData.author}"/><keywords>${qaFmMetaData.keywords}</keywords><answer>${qaContent}</answer></QA>`;
 
                 return TargetDocumentImpl.createTargetDocumentImpl(
                     TargetDocument.createTargetDocument({
@@ -36,8 +42,9 @@ export function makeUnConfiguredMapParsedDocument({ marked }: any): UnConfigured
                         transformedData,
                         fmMetaData: qaFmMetaData
                     }),
-                    mdParsedDocumentImpl.documentPaths.basename,
-                    parseWithMarked(mdParsedDocumentImpl.sectionTitleToken)
+                    slugifiedQaName,
+                    slugifiedSectionName,
+                    sectionTitle
                 );
             }
         };
