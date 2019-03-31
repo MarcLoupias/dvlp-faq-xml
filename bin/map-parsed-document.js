@@ -24,8 +24,12 @@ function makeUnConfiguredMapParsedDocument({ marked, getSlug }) {
                 const qaTitleText = questionTitleToken.text;
                 const qaTitleTag = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
                 const sectionTitle = parseWithMarked(mdParsedDocumentImpl.sectionTitleToken);
-                const slugifiedQaName = getSlug(qaTitleText, { lang: 'fr' });
-                const slugifiedSectionName = getSlug(sectionTitle, { lang: 'fr' });
+                const slugifiedQaName = getSlug(qaTitleText
+                    .replace('<i>', '')
+                    .replace('</i>', ''), { lang: 'fr' });
+                const slugifiedSectionName = getSlug(sectionTitle
+                    .replace('<i>', '')
+                    .replace('</i>', ''), { lang: 'fr' });
                 const transformedData = `<QA create_date="${qaFmMetaData.getCreateDate()}" last_update="${qaFmMetaData.getLastUpdateDate()}" name="${slugifiedQaName}">${qaTitleTag}<author name="${qaFmMetaData.author}"/><keywords>${qaFmMetaData.keywords}</keywords><answer>${qaContent}</answer></QA>`;
                 return model_impl_1.TargetDocumentImpl.createTargetDocumentImpl(md_file_converter_1.TargetDocument.createTargetDocument({
                     documentPaths: mdParsedDocumentImpl.documentPaths,

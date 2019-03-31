@@ -32,8 +32,16 @@ export function makeUnConfiguredMapParsedDocument({ marked, getSlug }: any): UnC
                 const qaTitleTag: string = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
                 const sectionTitle: string = parseWithMarked(mdParsedDocumentImpl.sectionTitleToken);
 
-                const slugifiedQaName: string = getSlug(qaTitleText, { lang: 'fr' });
-                const slugifiedSectionName: string = getSlug(sectionTitle, { lang: 'fr' });
+                const slugifiedQaName: string = getSlug(
+                    qaTitleText
+                        .replace('<i>', '')
+                        .replace('</i>', ''),
+                    { lang: 'fr' });
+                const slugifiedSectionName: string = getSlug(
+                    sectionTitle
+                        .replace('<i>', '')
+                        .replace('</i>', ''),
+                    { lang: 'fr' });
                 const transformedData: string = `<QA create_date="${qaFmMetaData.getCreateDate()}" last_update="${qaFmMetaData.getLastUpdateDate()}" name="${slugifiedQaName}">${qaTitleTag}<author name="${qaFmMetaData.author}"/><keywords>${qaFmMetaData.keywords}</keywords><answer>${qaContent}</answer></QA>`;
 
                 return TargetDocumentImpl.createTargetDocumentImpl(
