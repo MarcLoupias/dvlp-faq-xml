@@ -46,25 +46,25 @@ licence: CC-BY-SA-4.0
 
 # FAQ Git pour developpez.com
 
-## 1 Généralités
+## Généralités
 
 - [Qu'est ce que Git ?](section-001/001.q001.md)
 - [Que signifie Git ?](section-001/001.q002.md)
 - [Où trouver de la documentation pour Git ?](section-001/001.q003.md)
 
-## 2 Installation et configuration
+## Installation et configuration
 
 - [Comment installer Git sur Windows ?](section-002/002.q001.md)
 - [Comment installer Git sur macOS ?](section-002/002.q002.md)
 - [Comment installer Git sur Linux ?](section-002/002.q003.md)
 
-## 3 Initialisation d'un dépôt
+## Initialisation d'un dépôt
 
 - [Comment initialiser un dépôt ?](section-003/003.q001.md)
 - [Comment initialiser un dépôt nu (*bare repository*) ?](section-003/003.q002.md)
 - [Comment cloner un dépôt ?](section-003/003.q003.md)
 
-## 4 Les dépôts distants (*remotes*)
+## Les dépôts distants (*remotes*)
 
 - [Comment lister les dépôts distants d'un dépôt ?](section-004/004.q001.md)
 - [Comment ajouter un dépôt distant ?](section-004/004.q002.md)

@@ -5,12 +5,12 @@ import { ITargetDocument } from 'md-file-converter';
 import { FmSummary, FmSummaryAuteur } from 'dvlp-commons';
 
 class SectionListObject {
-    public sectionName: string;
+    public slugifiedSectionName: string;
     public sectionTitle: string;
     public qaList: string[];
 
-    public constructor(sectionName: string, sectionTitle: string, qaList: string[]) {
-        this.sectionName = sectionName;
+    public constructor(slugifiedSectionName: string, sectionTitle: string, qaList: string[]) {
+        this.slugifiedSectionName = slugifiedSectionName;
         this.sectionTitle = sectionTitle;
         this.qaList = qaList;
     }
@@ -24,14 +24,14 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
 
     const sectionListObject = targetDocumentToReduceList
         .reduce((sections: any, qa: TargetDocumentImpl) => {
-            if (!sections[qa.getSectionName()]) {
-                sections[qa.getSectionName()] = new SectionListObject(qa.getSectionName(), qa.sectionTitle, []);
-                sections[qa.getSectionName()].qaList.push(qa.documentPaths.basename);
+            if (!sections[qa.slugifiedSectionName]) {
+                sections[qa.slugifiedSectionName] = new SectionListObject(qa.slugifiedSectionName, qa.sectionTitle, []);
+                sections[qa.slugifiedSectionName].qaList.push(qa.slugifiedQaName);
 
                 return sections;
 
             } else {
-                sections[qa.getSectionName()].qaList.push(qa.documentPaths.basename);
+                sections[qa.slugifiedSectionName].qaList.push(qa.slugifiedQaName);
 
                 return sections;
             }
@@ -40,11 +40,11 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
     reducedTargetDocumentList[0].xmlSectionList = Object
         .entries(sectionListObject)
         .reduce((xml: string, section: any) => {
-            const links = section[1].qaList.reduce((qaXml: string, basename: string) => {
-                return qaXml + `<link href="${basename}"/>`;
+            const links = section[1].qaList.reduce((qaXml: string, slugifiedQaName: string) => {
+                return qaXml + `<link href="${slugifiedQaName}"/>`;
             }, '');
 
-            return xml + `<section id="${section[1].sectionName}"><title>${section[1].sectionTitle}</title>${links}</section>`;
+            return xml + `<section id="${section[1].slugifiedSectionName}"><title>${section[1].sectionTitle}</title>${links}</section>`;
         }, '');
 
     return addXmlQa(reducedTargetDocumentList, targetDocumentToReduceCurrent);
