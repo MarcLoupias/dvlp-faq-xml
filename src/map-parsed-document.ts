@@ -30,6 +30,10 @@ export function makeUnConfiguredMapParsedDocument({ marked, getSlug }: any): UnC
                 const qaContent: string = parseWithMarked(mdParsedDocumentImpl.parsedTokensList);
                 const qaTitleText: string = questionTitleToken.text;
                 const qaTitleTag: string = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
+
+                const lastFolderSep = mdParsedDocument.documentPaths.src.lastIndexOf('/');
+                const previousLastFolderSep = mdParsedDocument.documentPaths.src.lastIndexOf('/', lastFolderSep - 1);
+                const sectionPathName: string = mdParsedDocument.documentPaths.src.substring(previousLastFolderSep + 1, lastFolderSep);
                 const sectionTitle: string = parseWithMarked(mdParsedDocumentImpl.sectionTitleToken);
 
                 const slugifiedQaName: string = getSlug(
@@ -51,6 +55,7 @@ export function makeUnConfiguredMapParsedDocument({ marked, getSlug }: any): UnC
                         fmMetaData: qaFmMetaData
                     }),
                     slugifiedQaName,
+                    sectionPathName,
                     slugifiedSectionName,
                     sectionTitle
                 );
