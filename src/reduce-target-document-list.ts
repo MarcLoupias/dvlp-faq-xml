@@ -7,29 +7,13 @@ import { FmSummary, FmSummaryAuteur } from 'dvlp-commons';
 class SectionListObject {
     public subSections: any = {};
 
-    public constructor(public sectionName: string, public slugifiedSectionName: string, public sectionTitle: string, public qaList: string[]) {
-        this.slugifiedSectionName = slugifiedSectionName;
-        this.sectionTitle = sectionTitle;
-        this.qaList = qaList;
-    }
+    public constructor(public sectionName: string,
+                       public slugifiedSectionName: string,
+                       public sectionTitle: string,
+                       public qaList: string[]) {}
 
     public addSubSection(section: SectionListObject) {
         this.subSections[section.sectionName] = section;
-    }
-
-    public findSubSection(sectionName: string) {
-        if (this.subSections[sectionName]) {
-            return this.subSections[sectionName];
-        }
-
-        for (const section of this.subSections) {
-            const res = section.findSubSection(sectionName);
-            if (res) {
-                return res;
-            }
-        }
-
-        return undefined;
     }
 }
 
@@ -64,12 +48,32 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
     const sectionHierarchy: typeof sectionListObject = {};
     orderedSectionNames.forEach((key: string) =>  {
         if (sectionListObject[key].sectionName.split('-').length >= 3) {
-            // Subsection case. We remove the last section numbering to find in which parent it is
-            const parentName: string = sectionListObject[key].sectionName.substring(0, sectionListObject[key].sectionName.lastIndexOf('-'));
-            sectionHierarchy[parentName].addSubSection(sectionListObject[key]); // Recursivity not working !!!
+            // Subsection case
+
+            // Recursive function to find the section which should own the subsection
+            const sectionFinder = (sectionList: any, name: string) => {
+                if (sectionList[name]) {
+                    return sectionList[name];
+                }
+
+                for (const section of sectionList.subSections) {
+                    const res = section.sectionFinder(section, name);
+                    if (res) {
+                        return res;
+                    }
+                }
+
+                return undefined;
+            };
+
+            // We remove the last section numbering to find in which parent it is
+            const sectionName: string = sectionListObject[key].sectionName;
+            const parentName: string = sectionName.substring(0, sectionName.lastIndexOf('-'));
+            const sectionNode = sectionFinder(sectionHierarchy, parentName);
+            sectionNode.addSubSection(sectionListObject[key]);
         } else {
-        if (!sectionHierarchy[sectionListObject[key].sectionName]) {
-            sectionHierarchy[sectionListObject[key].sectionName] = sectionListObject[key];
+            if (!sectionHierarchy[sectionListObject[key].sectionName]) {
+                sectionHierarchy[sectionListObject[key].sectionName] = sectionListObject[key];
         }
     }
     });
