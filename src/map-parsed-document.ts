@@ -15,6 +15,14 @@ export function makeUnConfiguredMapParsedDocument({ marked, getSlug }: any): UnC
                 return marked.parser(tokens, conf.markedOptions);
             }
 
+            // Returns the last folder name from a path
+            // for 'folder1/folder2/file.ext, it would return 'folder2'
+            function getLastFolderFromPath(path: string): string {
+                const lastFolderSep = path.lastIndexOf('/');
+                const previousLastFolderSep = path.lastIndexOf('/', lastFolderSep - 1);
+                return path.substring(previousLastFolderSep + 1, lastFolderSep);
+            }
+
             if (mdParsedDocument.documentPaths.basename === 'SUMMARY') {
                 return TargetDocument.createTargetDocument({
                     documentPaths: mdParsedDocument.documentPaths,
@@ -30,10 +38,7 @@ export function makeUnConfiguredMapParsedDocument({ marked, getSlug }: any): UnC
                 const qaContent: string = parseWithMarked(mdParsedDocumentImpl.parsedTokensList);
                 const qaTitleText: string = questionTitleToken.text;
                 const qaTitleTag: string = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
-
-                const lastFolderSep = mdParsedDocument.documentPaths.src.lastIndexOf('/');
-                const previousLastFolderSep = mdParsedDocument.documentPaths.src.lastIndexOf('/', lastFolderSep - 1);
-                const sectionPathName: string = mdParsedDocument.documentPaths.src.substring(previousLastFolderSep + 1, lastFolderSep);
+                const sectionPathName: string = getLastFolderFromPath(mdParsedDocument.documentPaths.src);
                 const sectionTitle: string = parseWithMarked(mdParsedDocumentImpl.sectionTitleToken);
 
                 const slugifiedQaName: string = getSlug(
