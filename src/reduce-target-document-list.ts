@@ -38,7 +38,7 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
             }
         }, {});
 
-    // Sort, to have inner section following the parent section
+    // Sort by section name: assure that the subsection is always following the parent section
     const orderedSectionNames: string[] = Object.keys(sectionListObject)
             .sort((key1: string, key2: string) =>
                 sectionListObject[key1].sectionName > sectionListObject[key2].sectionName ? 1 : -1)
@@ -47,7 +47,8 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
     // Putting subsection in adequate parent section
     const sectionHierarchy: typeof sectionListObject = {};
     orderedSectionNames.forEach((key: string) =>  {
-        if (sectionListObject[key].sectionName.split('-').length >= 3) {
+        const sectionName: string = sectionListObject[key].sectionName;
+        if (sectionName.split('-').length >= 3) {
             // Subsection case
 
             // Recursive function to find the section which should own the subsection
@@ -67,17 +68,17 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
             };
 
             // We remove the last section numbering to find in which parent it is
-            const sectionName: string = sectionListObject[key].sectionName;
             const parentName: string = sectionName.substring(0, sectionName.lastIndexOf('-'));
             const sectionNode = sectionFinder(sectionHierarchy, parentName);
             sectionNode.addSubSection(sectionListObject[key]);
         } else {
-            if (!sectionHierarchy[sectionListObject[key].sectionName]) {
-                sectionHierarchy[sectionListObject[key].sectionName] = sectionListObject[key];
+            if (!sectionHierarchy[sectionName]) {
+                sectionHierarchy[sectionName] = sectionListObject[key];
         }
     }
     });
 
+    // Produce the XML code for section (and subsection thanks to recursivity)
     const sectionReducer = (xml: string, section: any): string => {
         const links = section[1].qaList.reduce((qaXml: string, slugifiedQaName: string) => {
             return qaXml + `<link href="${slugifiedQaName}"/>`;
