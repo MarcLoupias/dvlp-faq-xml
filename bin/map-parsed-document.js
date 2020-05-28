@@ -9,6 +9,11 @@ function makeUnConfiguredMapParsedDocument({ marked, getSlug }) {
                 tokens.links = Object.create(null);
                 return marked.parser(tokens, conf.markedOptions);
             }
+            function getLastFolderFromPath(path) {
+                const lastFolderSep = path.lastIndexOf('/');
+                const previousLastFolderSep = path.lastIndexOf('/', lastFolderSep - 1);
+                return path.substring(previousLastFolderSep + 1, lastFolderSep);
+            }
             if (mdParsedDocument.documentPaths.basename === 'SUMMARY') {
                 return md_file_converter_1.TargetDocument.createTargetDocument({
                     documentPaths: mdParsedDocument.documentPaths,
@@ -23,6 +28,7 @@ function makeUnConfiguredMapParsedDocument({ marked, getSlug }) {
                 const qaContent = parseWithMarked(mdParsedDocumentImpl.parsedTokensList);
                 const qaTitleText = questionTitleToken.text;
                 const qaTitleTag = parseWithMarked(mdParsedDocumentImpl.questionTitleToken);
+                const sectionPathName = getLastFolderFromPath(mdParsedDocument.documentPaths.src);
                 const sectionTitle = parseWithMarked(mdParsedDocumentImpl.sectionTitleToken);
                 const slugifiedQaName = getSlug(qaTitleText
                     .replace('<i>', '')
@@ -35,7 +41,7 @@ function makeUnConfiguredMapParsedDocument({ marked, getSlug }) {
                     documentPaths: mdParsedDocumentImpl.documentPaths,
                     transformedData,
                     fmMetaData: qaFmMetaData
-                }), slugifiedQaName, slugifiedSectionName, sectionTitle);
+                }), slugifiedQaName, sectionPathName, slugifiedSectionName, sectionTitle);
             }
         };
     };
