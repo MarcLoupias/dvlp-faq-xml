@@ -40,6 +40,9 @@ function initXmlDocument(reducedTargetDocumentList, targetDocumentToReduceCurren
                 if (sectionList[name]) {
                     return sectionList[name];
                 }
+                if (sectionList.subsection === undefined) {
+                    return undefined;
+                }
                 for (const section of sectionList.subSections) {
                     const res = section.sectionFinder(section, name);
                     if (res) {
@@ -50,7 +53,9 @@ function initXmlDocument(reducedTargetDocumentList, targetDocumentToReduceCurren
             };
             const parentName = sectionName.substring(0, sectionName.lastIndexOf('-'));
             const sectionNode = sectionFinder(sectionHierarchy, parentName);
-            sectionNode.addSubSection(sectionListObject[key]);
+            if (sectionNode !== undefined) {
+                sectionNode.addSubSection(sectionListObject[key]);
+            }
         }
         else {
             if (!sectionHierarchy[sectionName]) {

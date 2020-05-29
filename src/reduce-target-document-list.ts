@@ -57,6 +57,11 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
                     return sectionList[name];
                 }
 
+                if (sectionList.subsection === undefined) {
+                    // This section is empty, thus it does not exist in the list
+                    return undefined;
+                }
+
                 for (const section of sectionList.subSections) {
                     const res = section.sectionFinder(section, name);
                     if (res) {
@@ -70,7 +75,9 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
             // We remove the last section numbering to find in which parent it is
             const parentName: string = sectionName.substring(0, sectionName.lastIndexOf('-'));
             const sectionNode = sectionFinder(sectionHierarchy, parentName);
-            sectionNode.addSubSection(sectionListObject[key]);
+            if (sectionNode !== undefined) {
+                sectionNode.addSubSection(sectionListObject[key]);
+            }
         } else {
             if (!sectionHierarchy[sectionName]) {
                 sectionHierarchy[sectionName] = sectionListObject[key];
