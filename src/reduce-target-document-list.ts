@@ -5,14 +5,15 @@ import { ITargetDocument } from 'md-file-converter';
 import { FmSummary, FmSummaryAuteur } from 'dvlp-commons';
 
 class SectionListObject {
-    public slugifiedSectionName: string;
-    public sectionTitle: string;
-    public qaList: string[];
+    public subSections: any = {};
 
-    public constructor(slugifiedSectionName: string, sectionTitle: string, qaList: string[]) {
-        this.slugifiedSectionName = slugifiedSectionName;
-        this.sectionTitle = sectionTitle;
-        this.qaList = qaList;
+    public constructor(public sectionName: string,
+                       public slugifiedSectionName: string,
+                       public sectionTitle: string,
+                       public qaList: string[]) {}
+
+    public addSubSection(section: SectionListObject) {
+        this.subSections[section.sectionName] = section;
     }
 }
 
@@ -25,7 +26,7 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
     const sectionListObject = targetDocumentToReduceList
         .reduce((sections: any, qa: TargetDocumentImpl) => {
             if (!sections[qa.slugifiedSectionName]) {
-                sections[qa.slugifiedSectionName] = new SectionListObject(qa.slugifiedSectionName, qa.sectionTitle, []);
+                sections[qa.slugifiedSectionName] = new SectionListObject(qa.sectionPathName, qa.slugifiedSectionName, qa.sectionTitle, []);
                 sections[qa.slugifiedSectionName].qaList.push(qa.slugifiedQaName);
 
                 return sections;
@@ -37,15 +38,65 @@ function initXmlDocument(reducedTargetDocumentList: ReducedTargetDocumentImpl[],
             }
         }, {});
 
-    reducedTargetDocumentList[0].xmlSectionList = Object
-        .entries(sectionListObject)
-        .reduce((xml: string, section: any) => {
-            const links = section[1].qaList.reduce((qaXml: string, slugifiedQaName: string) => {
-                return qaXml + `<link href="${slugifiedQaName}"/>`;
-            }, '');
+    // Sort by section name: assure that the subsection is always following the parent section
+    const orderedSectionNames: string[] = Object.keys(sectionListObject)
+            .sort((key1: string, key2: string) =>
+                sectionListObject[key1].sectionName > sectionListObject[key2].sectionName ? 1 : -1)
+            .map((key) => key);
 
-            return xml + `<section id="${section[1].slugifiedSectionName}"><title>${section[1].sectionTitle}</title>${links}</section>`;
+    // Putting subsection in adequate parent section
+    const sectionHierarchy: typeof sectionListObject = {};
+    orderedSectionNames.forEach((key: string) =>  {
+        const sectionName: string = sectionListObject[key].sectionName;
+        if (sectionName.split('-').length >= 3) {
+            // Subsection case
+
+            // Recursive function to find the section which should own the subsection
+            const sectionFinder = (sectionList: any, name: string) => {
+                if (sectionList[name]) {
+                    return sectionList[name];
+                }
+
+                if (sectionList.subsection === undefined) {
+                    // This section is empty, thus it does not exist in the list
+                    return undefined;
+                }
+
+                for (const section of sectionList.subSections) {
+                    const res = section.sectionFinder(section, name);
+                    if (res) {
+                        return res;
+                    }
+                }
+
+                return undefined;
+            };
+
+            // We remove the last section numbering to find in which parent it is
+            const parentName: string = sectionName.substring(0, sectionName.lastIndexOf('-'));
+            const sectionNode = sectionFinder(sectionHierarchy, parentName);
+            if (sectionNode !== undefined) {
+                sectionNode.addSubSection(sectionListObject[key]);
+            }
+        } else {
+            if (!sectionHierarchy[sectionName]) {
+                sectionHierarchy[sectionName] = sectionListObject[key];
+        }
+    }
+    });
+
+    // Produce the XML code for section (and subsection thanks to recursivity)
+    const sectionReducer = (xml: string, section: any): string => {
+        const links = section[1].qaList.reduce((qaXml: string, slugifiedQaName: string) => {
+            return qaXml + `<link href="${slugifiedQaName}"/>`;
         }, '');
+
+        const subXML: string = Object.entries(section[1].subSections).reduce(sectionReducer, '');
+
+        return xml + `<section id="${section[1].slugifiedSectionName}"><title>${section[1].sectionTitle}</title>${links}${subXML}</section>`;
+    };
+
+    reducedTargetDocumentList[0].xmlSectionList = Object.entries(sectionHierarchy).reduce(sectionReducer, '');
 
     return addXmlQa(reducedTargetDocumentList, targetDocumentToReduceCurrent);
 }

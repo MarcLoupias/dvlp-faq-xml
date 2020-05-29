@@ -1,10 +1,15 @@
 'use strict';
 Object.defineProperty(exports, "__esModule", { value: true });
 class SectionListObject {
-    constructor(slugifiedSectionName, sectionTitle, qaList) {
+    constructor(sectionName, slugifiedSectionName, sectionTitle, qaList) {
+        this.sectionName = sectionName;
         this.slugifiedSectionName = slugifiedSectionName;
         this.sectionTitle = sectionTitle;
         this.qaList = qaList;
+        this.subSections = {};
+    }
+    addSubSection(section) {
+        this.subSections[section.sectionName] = section;
     }
 }
 function initXmlDocument(reducedTargetDocumentList, targetDocumentToReduceCurrent, index, targetDocumentToReduceList) {
@@ -15,7 +20,7 @@ function initXmlDocument(reducedTargetDocumentList, targetDocumentToReduceCurren
     const sectionListObject = targetDocumentToReduceList
         .reduce((sections, qa) => {
         if (!sections[qa.slugifiedSectionName]) {
-            sections[qa.slugifiedSectionName] = new SectionListObject(qa.slugifiedSectionName, qa.sectionTitle, []);
+            sections[qa.slugifiedSectionName] = new SectionListObject(qa.sectionPathName, qa.slugifiedSectionName, qa.sectionTitle, []);
             sections[qa.slugifiedSectionName].qaList.push(qa.slugifiedQaName);
             return sections;
         }
@@ -24,14 +29,48 @@ function initXmlDocument(reducedTargetDocumentList, targetDocumentToReduceCurren
             return sections;
         }
     }, {});
-    reducedTargetDocumentList[0].xmlSectionList = Object
-        .entries(sectionListObject)
-        .reduce((xml, section) => {
+    const orderedSectionNames = Object.keys(sectionListObject)
+        .sort((key1, key2) => sectionListObject[key1].sectionName > sectionListObject[key2].sectionName ? 1 : -1)
+        .map((key) => key);
+    const sectionHierarchy = {};
+    orderedSectionNames.forEach((key) => {
+        const sectionName = sectionListObject[key].sectionName;
+        if (sectionName.split('-').length >= 3) {
+            const sectionFinder = (sectionList, name) => {
+                if (sectionList[name]) {
+                    return sectionList[name];
+                }
+                if (sectionList.subsection === undefined) {
+                    return undefined;
+                }
+                for (const section of sectionList.subSections) {
+                    const res = section.sectionFinder(section, name);
+                    if (res) {
+                        return res;
+                    }
+                }
+                return undefined;
+            };
+            const parentName = sectionName.substring(0, sectionName.lastIndexOf('-'));
+            const sectionNode = sectionFinder(sectionHierarchy, parentName);
+            if (sectionNode !== undefined) {
+                sectionNode.addSubSection(sectionListObject[key]);
+            }
+        }
+        else {
+            if (!sectionHierarchy[sectionName]) {
+                sectionHierarchy[sectionName] = sectionListObject[key];
+            }
+        }
+    });
+    const sectionReducer = (xml, section) => {
         const links = section[1].qaList.reduce((qaXml, slugifiedQaName) => {
             return qaXml + `<link href="${slugifiedQaName}"/>`;
         }, '');
-        return xml + `<section id="${section[1].slugifiedSectionName}"><title>${section[1].sectionTitle}</title>${links}</section>`;
-    }, '');
+        const subXML = Object.entries(section[1].subSections).reduce(sectionReducer, '');
+        return xml + `<section id="${section[1].slugifiedSectionName}"><title>${section[1].sectionTitle}</title>${links}${subXML}</section>`;
+    };
+    reducedTargetDocumentList[0].xmlSectionList = Object.entries(sectionHierarchy).reduce(sectionReducer, '');
     return addXmlQa(reducedTargetDocumentList, targetDocumentToReduceCurrent);
 }
 function finalizeXmlDocument(reducedTargetDocumentList, targetDocumentToReduce) {
